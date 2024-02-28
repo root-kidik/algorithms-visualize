@@ -2,10 +2,10 @@ import { Layout, Rect, Txt, makeScene2D } from "@motion-canvas/2d";
 import {
   Direction,
   PossibleVector2,
-  Vector2,
   all,
   createRef,
   createSignal,
+  finishScene,
   range,
   slideTransition,
   useRandom,
@@ -33,6 +33,23 @@ const getBottomPosition = (
   ];
 };
 
+const getUpperPosition = (
+  node1: Layout,
+  node2: Layout,
+  paddig: number,
+): PossibleVector2 => {
+  return [
+    node2.position().x,
+    node2.position().y -
+      (node1.height() / 2 +
+        node2.height() / 2 +
+        paddig -
+        node2.parent().parent().parentAs<Layout>().padding.top() / 2 -
+        node2.parentAs<Layout>().height() / 2 +
+        node2.parent().parentAs<Layout>().height() / 2),
+  ];
+};
+
 export default makeScene2D(function* (view) {
   const code = createRef<CodeBlock>();
 
@@ -41,20 +58,35 @@ export default makeScene2D(function* (view) {
 
   const pool = range(count()).map(() => (
     <Rect
+      radius={10}
+      fill={"rgb(20,20,20)"}
+      padding={10}
       width={120}
       height={120}
-      fill={"#ffffff"}
-      direction={"column"}
       alignItems={"center"}
       justifyContent={"center"}
+      smoothCorners
       layout
     >
-      <Txt
-        fontFamily={"Jetbrains Mono"}
-        fontWeight={800}
-        fontSize={48}
-        text={random.nextInt(1, 100).toString()}
-      />
+      <Rect
+        fill={"rgb(0,0,0)"}
+        direction={"column"}
+        width={"100%"}
+        height={"100%"}
+        alignItems={"center"}
+        justifyContent={"center"}
+        radius={10}
+        smoothCorners
+        layout
+      >
+        <Txt
+          fontFamily={"Jetbrains Mono"}
+          fontWeight={800}
+          fontSize={48}
+          fill={"#ffffff"}
+          text={random.nextInt(1, 100).toString()}
+        />
+      </Rect>
     </Rect>
   ));
 
@@ -66,7 +98,6 @@ export default makeScene2D(function* (view) {
       <Layout
         direction={"column"}
         alignItems={"center"}
-        justifyContent={"center"}
         gap={40}
         ref={key_layout}
         layout
@@ -74,47 +105,57 @@ export default makeScene2D(function* (view) {
         <Rect
           width={120}
           height={120}
+          radius={10}
+          padding={10}
+          smoothCorners
           fill={"#4CBB17"}
           direction={"column"}
           alignItems={"center"}
           justifyContent={"center"}
           layout
         >
-          <Txt
-            fontFamily={"Jetbrains Mono"}
-            fontWeight={800}
-            fontSize={48}
-            text={"11"}
-          />
+          <Rect
+            width={"100%"}
+            height={"100%"}
+            radius={10}
+            smoothCorners
+            fill={"rgb(0,0,0)"}
+            direction={"column"}
+            alignItems={"center"}
+            justifyContent={"center"}
+            layout
+          >
+            <Txt
+              fontFamily={"Jetbrains Mono"}
+              fontWeight={800}
+              fill={"white"}
+              fontSize={48}
+              text={"11"}
+            />
+          </Rect>
         </Rect>
-        <Txt
-          fontFamily={"Jetbrains Mono"}
-          fontWeight={800}
-          fontSize={40}
-          fill={"#4CBB17"}
-          text={"key"}
-        />
       </Layout>
 
-      <Layout direction={"column"} gap={300} layout>
-        <Layout
-          direction={"row"}
-          height={120}
-          gap={40}
-          ref={arr_layout}
-          alignItems={"center"}
-          justifyContent={"center"}
-          layout
-        >
-          {() => pool.slice(0, count())}
-        </Layout>
+      <Layout paddingTop={200} layout>
+        <Layout direction={"column"} gap={100} layout>
+          <Layout
+            direction={"row"}
+            height={120}
+            gap={40}
+            ref={arr_layout}
+            alignItems={"center"}
+            justifyContent={"center"}
+            layout
+          >
+            {() => pool.slice(0, count())}
+          </Layout>
 
-        <CodeBlock
-          fontFamily={"Jetbrains Mono"}
-          fontWeight={800}
-          fontSize={32}
-          language="c++"
-          code={`int linear_search(vector<int> arr, int key)
+          <CodeBlock
+            fontFamily={"Jetbrains Mono"}
+            fontWeight={800}
+            fontSize={37}
+            language="c++"
+            code={`int linear_search(vector<int> arr, int key)
 {
   for (size_t i = 0; i < arr.size(); i++)
     if (arr[i] == key)
@@ -122,8 +163,9 @@ export default makeScene2D(function* (view) {
 
   return -1;
 }`}
-          ref={code}
-        />
+            ref={code}
+          />
+        </Layout>
       </Layout>
     </>,
   );
@@ -138,18 +180,17 @@ export default makeScene2D(function* (view) {
     first_child.position().y +
       (key_layout().height() / 2 -
         first_child.height() / 2 +
+        first_child.parent().parent().parentAs<Layout>().padding.top() / 2 +
         first_child.parentAs<Layout>().height() / 2 -
         first_child.parent().parentAs<Layout>().height() / 2),
   ]);
 
-  yield* slideTransition(Direction.Right);
+  view.opacity(0);
+  yield* all(slideTransition(Direction.Right), view.opacity(1, 1));
 
   yield* all(
     code().selection(word(2, 7, 12), 1), // size_t i = 0
-    key_layout().position(
-      getBottomPosition(key_layout(), arr_childs[0], 40),
-      1,
-    ),
+    key_layout().position(getUpperPosition(key_layout(), arr_childs[0], 40), 1),
   );
   yield* code().selection(word(2, 20, 15), 1); // i < arr.size()
 
@@ -160,10 +201,7 @@ export default makeScene2D(function* (view) {
 
   yield* all(
     code().selection(word(2, 37, 3), 1), // i++
-    key_layout().position(
-      getBottomPosition(key_layout(), arr_childs[1], 40),
-      1,
-    ),
+    key_layout().position(getUpperPosition(key_layout(), arr_childs[1], 40), 1),
   );
 
   for (let i = 1; i < count(); i++) {
@@ -186,11 +224,14 @@ export default makeScene2D(function* (view) {
     yield* all(
       code().selection(word(2, 37, 3), 1), // i++
       key_layout().position(
-        getBottomPosition(key_layout(), arr_childs[i + 1], 40),
+        getUpperPosition(key_layout(), arr_childs[i + 1], 40),
         1,
       ),
     );
   }
+
+  finishScene();
+  yield* view.opacity(0, 1);
 
   yield* waitFor(1);
 });

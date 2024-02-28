@@ -1,10 +1,10 @@
-import { Layout, Txt, makeScene2D } from "@motion-canvas/2d";
+import { Layout, Rect, Txt, makeScene2D } from "@motion-canvas/2d";
 import {
   Direction,
   all,
   createRef,
+  finishScene,
   slideTransition,
-  waitFor,
 } from "@motion-canvas/core";
 
 export default makeScene2D(function* (view) {
@@ -20,126 +20,387 @@ export default makeScene2D(function* (view) {
         gap={40}
         layout
       >
-        <Layout direction={"column"} alignSelf={"end"} gap={20} layout>
-          <Txt
-            fontFamily={"Jetbrains Mono"}
-            fontWeight={800}
-            fontSize={48}
-            fill={"#ffffff"}
-            text={"O"}
-          />
-          <Txt
-            fontFamily={"Jetbrains Mono"}
-            fontWeight={800}
-            fontSize={48}
-            fill={"#ffffff"}
-            text={"Ω"}
-          />
-          <Txt
-            fontFamily={"Jetbrains Mono"}
-            fontWeight={800}
-            fontSize={48}
-            fill={"#ffffff"}
-            text={"θ"}
-          />
+        <Layout
+          width={100}
+          direction={"column"}
+          alignSelf={"end"}
+          gap={20}
+          layout
+        >
+          <Rect
+            opacity={0}
+            radius={10}
+            fill={"rgb(20,20,20)"}
+            padding={10}
+            smoothCorners
+            layout
+          >
+            <Rect
+              fill={"rgb(0,0,0)"}
+              direction={"column"}
+              radius={10}
+              smoothCorners
+              layout
+            >
+              <Txt
+                fontFamily={"Jetbrains Mono"}
+                fontWeight={800}
+                fontSize={48}
+                padding={10}
+                fill={"#ffffff"}
+                text={"O"}
+              />
+            </Rect>
+          </Rect>
+
+          <Rect
+            radius={10}
+            fill={"rgb(20,20,20)"}
+            padding={10}
+            smoothCorners
+            layout
+          >
+            <Rect
+              alignItems={"center"}
+              width={"100%"}
+              fill={"rgb(0,0,0)"}
+              direction={"column"}
+              radius={10}
+              smoothCorners
+              layout
+            >
+              <Txt
+                fontFamily={"Jetbrains Mono"}
+                fontWeight={800}
+                fontSize={48}
+                padding={10}
+                fill={"#ffffff"}
+                text={"O"}
+              />
+            </Rect>
+          </Rect>
+
+          <Rect
+            radius={10}
+            fill={"rgb(20,20,20)"}
+            padding={10}
+            smoothCorners
+            layout
+          >
+            <Rect
+              alignItems={"center"}
+              width={"100%"}
+              fill={"rgb(0,0,0)"}
+              direction={"column"}
+              radius={10}
+              smoothCorners
+              layout
+            >
+              <Txt
+                fontFamily={"Jetbrains Mono"}
+                fontWeight={800}
+                fontSize={48}
+                padding={10}
+                fill={"#ffffff"}
+                text={"Ω"}
+              />
+            </Rect>
+          </Rect>
+
+          <Rect
+            radius={10}
+            fill={"rgb(20,20,20)"}
+            padding={10}
+            smoothCorners
+            layout
+          >
+            <Rect
+              alignItems={"center"}
+              width={"100%"}
+              fill={"rgb(0,0,0)"}
+              direction={"column"}
+              radius={10}
+              smoothCorners
+              layout
+            >
+              <Txt
+                fontFamily={"Jetbrains Mono"}
+                fontWeight={800}
+                fontSize={48}
+                padding={10}
+                fill={"#ffffff"}
+                text={"θ"}
+              />
+            </Rect>
+          </Rect>
         </Layout>
         <Layout
+          width={100}
           direction={"column"}
           alignItems={"center"}
           gap={20}
           ref={time_column}
           layout
         >
-          <Txt
-            fontFamily={"Jetbrains Mono"}
-            fontWeight={800}
-            fontSize={48}
-            padding={40}
-            fill={"#ffffff"}
-            text={"⏳"}
-          />
-          <Txt
-            fontFamily={"Jetbrains Mono"}
-            fontWeight={800}
-            fontSize={48}
-            fill={"#ffffff"}
+          <Rect
+            radius={10}
+            width={"100%"}
+            fill={"rgb(20,20,20)"}
+            padding={10}
+            smoothCorners
+            layout
+          >
+            <Rect
+              alignItems={"center"}
+              width={"100%"}
+              fill={"rgb(0,0,0)"}
+              direction={"column"}
+              radius={10}
+              smoothCorners
+              layout
+            >
+              <Txt
+                fontFamily={"Jetbrains Mono"}
+                fontWeight={800}
+                fontSize={48}
+                padding={10}
+                fill={"#ffffff"}
+                text={"⏳"}
+              />
+            </Rect>
+          </Rect>
+
+          <Rect
             opacity={0}
-            text={"N"}
-          />
-          <Txt
-            fontFamily={"Jetbrains Mono"}
-            fontWeight={800}
-            fontSize={48}
+            radius={10}
+            width={"100%"}
+            fill={"rgb(20,20,20)"}
+            padding={10}
+            smoothCorners
+            layout
+          >
+            <Rect
+              alignItems={"center"}
+              width={"100%"}
+              fill={"rgb(0,0,0)"}
+              direction={"column"}
+              radius={10}
+              smoothCorners
+              layout
+            >
+              <Txt
+                fontFamily={"Jetbrains Mono"}
+                fontWeight={800}
+                fontSize={48}
+                padding={10}
+                fill={"#ffffff"}
+                text={"N"}
+              />
+            </Rect>
+          </Rect>
+
+          <Rect
+            opacity={0}
+            radius={10}
+            width={"100%"}
             fill={"#4CBB17"}
+            padding={10}
+            smoothCorners
+            layout
+          >
+            <Rect
+              alignItems={"center"}
+              width={"100%"}
+              fill={"rgb(0,0,0)"}
+              direction={"column"}
+              radius={10}
+              smoothCorners
+              layout
+            >
+              <Txt
+                fontFamily={"Jetbrains Mono"}
+                fontWeight={800}
+                fontSize={48}
+                padding={10}
+                fill={"#ffffff"}
+                text={"1"}
+              />
+            </Rect>
+          </Rect>
+
+          <Rect
             opacity={0}
-            text={"1"}
-          />
-          <Txt
-            fontFamily={"Jetbrains Mono"}
-            fontWeight={800}
-            fontSize={48}
-            fill={"#ffffff"}
-            opacity={0}
-            text={"N"}
-          />
+            radius={10}
+            width={"100%"}
+            fill={"rgb(20,20,20)"}
+            padding={10}
+            smoothCorners
+            layout
+          >
+            <Rect
+              alignItems={"center"}
+              width={"100%"}
+              fill={"rgb(0,0,0)"}
+              direction={"column"}
+              radius={10}
+              smoothCorners
+              layout
+            >
+              <Txt
+                fontFamily={"Jetbrains Mono"}
+                fontWeight={800}
+                fontSize={48}
+                padding={10}
+                fill={"#ffffff"}
+                text={"N"}
+              />
+            </Rect>
+          </Rect>
         </Layout>
         <Layout
+          width={100}
           direction={"column"}
           alignItems={"center"}
           gap={20}
           ref={space_column}
           layout
         >
-          <Txt
-            fontFamily={"Jetbrains Mono"}
-            fontWeight={800}
-            fontSize={48}
-            padding={40}
-            fill={"#ffffff"}
-            text={"💾"}
-          />
-          <Txt
-            fontFamily={"Jetbrains Mono"}
-            fontWeight={800}
-            fontSize={48}
-            fill={"#4CBB17"}
+          <Rect
+            radius={10}
+            width={"100%"}
+            fill={"rgb(20,20,20)"}
+            padding={10}
+            smoothCorners
+            layout
+          >
+            <Rect
+              alignItems={"center"}
+              width={"100%"}
+              fill={"rgb(0,0,0)"}
+              direction={"column"}
+              radius={10}
+              smoothCorners
+              layout
+            >
+              <Txt
+                fontFamily={"Jetbrains Mono"}
+                fontWeight={800}
+                fontSize={48}
+                padding={10}
+                fill={"#ffffff"}
+                text={"💾"}
+              />
+            </Rect>
+          </Rect>
+
+          <Rect
             opacity={0}
-            text={"1"}
-          />
-          <Txt
-            fontFamily={"Jetbrains Mono"}
-            fontWeight={800}
-            fontSize={48}
+            radius={10}
+            width={"100%"}
             fill={"#4CBB17"}
+            padding={10}
+            smoothCorners
+            layout
+          >
+            <Rect
+              alignItems={"center"}
+              width={"100%"}
+              fill={"rgb(0,0,0)"}
+              direction={"column"}
+              radius={10}
+              smoothCorners
+              layout
+            >
+              <Txt
+                fontFamily={"Jetbrains Mono"}
+                fontWeight={800}
+                fontSize={48}
+                padding={10}
+                fill={"#ffffff"}
+                text={"1"}
+              />
+            </Rect>
+          </Rect>
+
+          <Rect
             opacity={0}
-            text={"1"}
-          />
-          <Txt
-            fontFamily={"Jetbrains Mono"}
-            fontWeight={800}
-            fontSize={48}
+            radius={10}
+            width={"100%"}
             fill={"#4CBB17"}
+            padding={10}
+            smoothCorners
+            layout
+          >
+            <Rect
+              alignItems={"center"}
+              width={"100%"}
+              fill={"rgb(0,0,0)"}
+              direction={"column"}
+              radius={10}
+              smoothCorners
+              layout
+            >
+              <Txt
+                fontFamily={"Jetbrains Mono"}
+                fontWeight={800}
+                fontSize={48}
+                padding={10}
+                fill={"#ffffff"}
+                text={"1"}
+              />
+            </Rect>
+          </Rect>
+
+          <Rect
             opacity={0}
-            text={"1"}
-          />
+            radius={10}
+            width={"100%"}
+            fill={"#4CBB17"}
+            padding={10}
+            smoothCorners
+            layout
+          >
+            <Rect
+              alignItems={"center"}
+              width={"100%"}
+              fill={"rgb(0,0,0)"}
+              direction={"column"}
+              radius={10}
+              smoothCorners
+              layout
+            >
+              <Txt
+                fontFamily={"Jetbrains Mono"}
+                fontWeight={800}
+                fontSize={48}
+                padding={10}
+                fill={"#ffffff"}
+                text={"1"}
+              />
+            </Rect>
+          </Rect>
         </Layout>
       </Layout>
     </>,
   );
 
-  yield* slideTransition(Direction.Right);
+  view.opacity(0);
+  yield* all(slideTransition(Direction.Right), view.opacity(1, 1));
 
-  const time_children = time_column().childrenAs<Txt>();
+  const time_children = time_column().childrenAs<Layout>();
 
   yield* time_children[1].opacity(1, 1);
   yield* time_children[2].opacity(1, 1);
   yield* time_children[3].opacity(1, 1);
 
-  const space_children = space_column().childrenAs<Txt>();
+  const space_children = space_column().childrenAs<Layout>();
 
   yield* all(
     space_children[1].opacity(1, 1),
     space_children[2].opacity(1, 1),
     space_children[3].opacity(1, 1),
   );
+
+  finishScene();
+  yield* view.opacity(0, 1);
 });

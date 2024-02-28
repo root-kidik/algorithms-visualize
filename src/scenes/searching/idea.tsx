@@ -1,8 +1,10 @@
 import { Layout, Rect, Txt, makeScene2D } from "@motion-canvas/2d";
 import {
   Direction,
+  all,
   createRef,
   createSignal,
+  finishScene,
   range,
   slideTransition,
   useRandom,
@@ -16,20 +18,35 @@ export default makeScene2D(function* (view) {
 
   const pool = range(count()).map(() => (
     <Rect
+      radius={10}
+      fill={"rgb(20,20,20)"}
+      padding={10}
       width={120}
       height={120}
-      fill={"#ffffff"}
-      direction={"column"}
       alignItems={"center"}
       justifyContent={"center"}
+      smoothCorners
       layout
     >
-      <Txt
-        fontFamily={"Jetbrains Mono"}
-        fontWeight={800}
-        fontSize={48}
-        text={random.nextInt(1, 100).toString()}
-      />
+      <Rect
+        fill={"rgb(0, 0, 0)"}
+        direction={"column"}
+        width={"100%"}
+        height={"100%"}
+        alignItems={"center"}
+        justifyContent={"center"}
+        radius={10}
+        smoothCorners
+        layout
+      >
+        <Txt
+          fontFamily={"Jetbrains Mono"}
+          fontWeight={800}
+          fontSize={48}
+          fill={"#ffffff"}
+          text={random.nextInt(1, 100).toString()}
+        />
+      </Rect>
     </Rect>
   ));
 
@@ -48,26 +65,35 @@ export default makeScene2D(function* (view) {
         <Rect
           width={120}
           height={120}
+          radius={10}
+          padding={10}
+          smoothCorners
           fill={"#4CBB17"}
           direction={"column"}
           alignItems={"center"}
           justifyContent={"center"}
           layout
         >
-          <Txt
-            fontFamily={"Jetbrains Mono"}
-            fontWeight={800}
-            fontSize={48}
-            text={"93"}
-          />
+          <Rect
+            width={"100%"}
+            height={"100%"}
+            radius={10}
+            smoothCorners
+            fill={"rgb(0,0,0)"}
+            direction={"column"}
+            alignItems={"center"}
+            justifyContent={"center"}
+            layout
+          >
+            <Txt
+              fontFamily={"Jetbrains Mono"}
+              fontWeight={800}
+              fill={"white"}
+              fontSize={48}
+              text={"93"}
+            />
+          </Rect>
         </Rect>
-        <Txt
-          fontFamily={"Jetbrains Mono"}
-          fontWeight={800}
-          fontSize={40}
-          fill={"#4CBB17"}
-          text={"key"}
-        />
       </Layout>
       <Layout direction={"row"} height={120} gap={40} ref={arr_layout} layout>
         {() => pool.slice(0, count())}
@@ -86,7 +112,8 @@ export default makeScene2D(function* (view) {
       (key_layout().height() / 2 - first_child.height() / 2),
   ]);
 
-  yield* slideTransition(Direction.Right);
+  view.opacity(0);
+  yield* all(slideTransition(Direction.Right), view.opacity(1, 1));
 
   for (let i = 0; i < count(); i++) {
     yield* key_layout().position(
@@ -96,11 +123,14 @@ export default makeScene2D(function* (view) {
       1,
     );
     if (i > 2) {
-      yield* arr_childs[i].fill("#4CBB17", 0.2);
+      yield* arr_childs[i].fill("#4CBB17", 1);
+      yield* waitFor(1);
       break;
     } else {
-      yield* arr_childs[i].fill("#FF3131", 0.2);
+      yield* arr_childs[i].fill("#FF3131", 1);
     }
-    yield* waitFor(1);
   }
+
+  finishScene();
+  yield* view.opacity(0, 1);
 });

@@ -208,11 +208,12 @@ export default makeScene2D(function* (view) {
     yield* code().selection(word(2, 20, 15), 1); // i < arr.size()
 
     if (i > 2) {
-      yield* code().selection(lines(3), 1); // if
       yield* all(
-        code().selection(lines(4), 1), // return i;
+        code().selection(lines(3), 1), // if
         arr_childs[i].fill("#4CBB17", 1),
       );
+
+      yield* code().selection(lines(4), 1); // return i;
       break;
     } else {
       yield* all(

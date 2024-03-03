@@ -1,14 +1,10 @@
-import { Layout, Rect, Txt, makeScene2D } from "@motion-canvas/2d";
+import { makeScene2D } from "@motion-canvas/2d";
 import {
   Direction,
-  PossibleVector2,
   all,
   createRef,
-  createSignal,
   finishScene,
-  range,
   slideTransition,
-  useRandom,
   waitFor,
 } from "@motion-canvas/core";
 import {
@@ -16,186 +12,145 @@ import {
   lines,
   word,
 } from "@motion-canvas/2d/lib/components/CodeBlock";
-import {
-  InsideContainer,
-  OutsideContainer,
-} from "../../../components/container";
+import { MyArray } from "../../../components/my_array";
+import { greenColor, greyColor, redColor } from "../../../components/theme";
+import { Reference } from "@motion-canvas/core";
+import { Key } from "../../../components/key";
+import { MyText } from "../../../components/my_text";
 
-const getBottomPosition = (
-  node1: Layout,
-  node2: Layout,
-  paddig: number,
-): PossibleVector2 => {
-  return [
-    node2.position().x,
-    node2.position().y +
-      (node1.height() / 2 +
-        node2.height() / 2 +
-        paddig +
-        node2.parentAs<Layout>().height() / 2 -
-        node2.parent().parentAs<Layout>().height() / 2),
-  ];
-};
-
-const getUpperPosition = (
-  node1: Layout,
-  node2: Layout,
-  paddig: number,
-): PossibleVector2 => {
-  return [
-    node2.position().x,
-    node2.position().y -
-      (node1.height() / 2 +
-        node2.height() / 2 +
-        paddig -
-        node2.parent().parent().parentAs<Layout>().padding.top() / 2 -
-        node2.parentAs<Layout>().height() / 2 +
-        node2.parent().parentAs<Layout>().height() / 2),
-  ];
-};
+function* search(
+  code: Reference<CodeBlock>,
+  array: Reference<MyArray>,
+  key: Reference<Key>,
+  begin: number,
+  end: number,
+  time: number = 1,
+) {
+  for (let i = begin; i < end; i++) {
+    yield* all(
+      array().setPositionDowner(key, array().arr[i], time),
+      code().selection(word(6, 24, 3), time),
+    );
+    if (array().getArrTextKey(i) == "98") {
+      yield* all(
+        array().arr[i].fill(greenColor, time),
+        code().selection(word(6, 9, 13), time),
+      );
+      yield* waitFor(time);
+      break;
+    } else {
+      yield* all(
+        array().arr[i].fill(redColor, time),
+        code().selection(word(6, 9, 13), time),
+      );
+    }
+  }
+}
 
 export default makeScene2D(function* (view) {
   const code = createRef<CodeBlock>();
 
-  const count = createSignal(5);
-  const random = useRandom();
+  const arr_layout = createRef<MyArray>();
+  const key = createRef<Key>();
+  const temp = createRef<Key>();
+  const temp_text = createRef<MyText>();
 
-  const pool = range(count()).map(() => (
-    <OutsideContainer>
-      <InsideContainer>
-        <Txt
-          fontFamily={"Jetbrains Mono"}
-          fontWeight={800}
-          fontSize={48}
-          fill={"#ffffff"}
-          text={random.nextInt(1, 100).toString()}
-        />
-      </InsideContainer>
-    </OutsideContainer>
-  ));
-
-  const key_layout = createRef<Layout>();
-  const arr_layout = createRef<Layout>();
+  const count = 5;
 
   view.add(
     <>
-      <Layout
-        direction={"column"}
-        alignItems={"center"}
-        gap={40}
-        ref={key_layout}
-        layout
+      <MyArray
+        position={[0, -250]}
+        count={count}
+        answerIndex={count - 2}
+        ref={arr_layout}
       >
-        <OutsideContainer fill={"#4CBB17"}>
-          <InsideContainer>
-            <Txt
-              fontFamily={"Jetbrains Mono"}
-              fontWeight={800}
-              fill={"white"}
-              fontSize={48}
-              text={"93"}
-            />
-          </InsideContainer>
-        </OutsideContainer>
-      </Layout>
-
-      <Layout paddingTop={200} layout>
-        <Layout direction={"column"} gap={100} layout>
-          <Layout
-            direction={"row"}
-            height={120}
-            gap={40}
-            ref={arr_layout}
-            alignItems={"center"}
-            justifyContent={"center"}
-            layout
-          >
-            {() => pool.slice(0, count())}
-          </Layout>
-
-          <CodeBlock
-            fontFamily={"Jetbrains Mono"}
-            fontWeight={800}
-            fontSize={37}
-            language="c++"
-            code={`int linear_search(vector<int> arr, int key)
+        <Key ref={key} text="98" fill={greenColor} />
+        <Key ref={temp} textRef={temp_text} />
+      </MyArray>
+      <CodeBlock
+        fontFamily={"Jetbrains Mono"}
+        fontWeight={800}
+        fontSize={32}
+        language="c++"
+        position={[0, 250]}
+        code={`int sentinel_linear_search(vector<int> arr, int key)
 {
-  for (size_t i = 0; i < arr.size(); i++)
-    if (arr[i] == key)
-      return i;
+  int temp = arr.back();
+  arr.back() = key;
 
+  int i = 0;
+  while (arr[i] != key) i++;
+
+  arr.back() = temp;
+  if (i < arr.size() - 1 || arr[i] == key) return i;
   return -1;
 }`}
-            ref={code}
-          />
-        </Layout>
-      </Layout>
+        ref={code}
+      />
     </>,
   );
 
-  const arr_childs = arr_layout().childrenAs<Rect>();
-
-  const first_child = arr_childs[0];
-  key_layout().position([
-    first_child.position().x -
-      (first_child.width() / 2 + key_layout().width() / 2) -
-      40,
-    first_child.position().y +
-      (key_layout().height() / 2 -
-        first_child.height() / 2 +
-        first_child.parent().parent().parentAs<Layout>().padding.top() / 2 +
-        first_child.parentAs<Layout>().height() / 2 -
-        first_child.parent().parentAs<Layout>().height() / 2),
-  ]);
+  yield* arr_layout().setPositionLeft(key, arr_layout().arr_first, 0);
+  yield* arr_layout().setPositionLeft(temp, key(), 0);
 
   view.opacity(0);
   yield* all(slideTransition(Direction.Right), view.opacity(1, 1));
 
-  yield* all(
-    code().selection(word(2, 7, 12), 1), // size_t i = 0
-    key_layout().position(getUpperPosition(key_layout(), arr_childs[0], 40), 1),
-  );
-  yield* code().selection(word(2, 20, 15), 1); // i < arr.size()
+  yield* arr_layout().setPositionUpper(temp, arr_layout().arr_last);
+  yield* all(temp_text().text("96", 1), code().selection(lines(2), 1));
+
+  yield* arr_layout().setPositionDowner(key, arr_layout().arr_last);
 
   yield* all(
-    code().selection(lines(3, 3), 1), // if
-    arr_childs[0].fill("#FF3131", 1),
+    arr_layout().setArrTextKey(4, "98"),
+    code().selection(lines(3), 1),
   );
 
   yield* all(
-    code().selection(word(2, 37, 3), 1), // i++
-    key_layout().position(getUpperPosition(key_layout(), arr_childs[1], 40), 1),
+    arr_layout().setPositionDowner(key, arr_layout().arr[0], 1),
+    code().selection(lines(5), 1),
   );
 
-  for (let i = 1; i < count(); i++) {
-    yield* code().selection(word(2, 20, 15), 1); // i < arr.size()
+  yield* all(
+    arr_layout().arr[0].fill(redColor, 1),
+    code().selection(word(6, 9, 13), 1),
+  );
+  yield* waitFor(1);
 
-    if (i > 2) {
-      yield* all(
-        code().selection(lines(3), 1), // if
-        arr_childs[i].fill("#4CBB17", 1),
-      );
+  yield* search(code, arr_layout, key, 1, 4);
 
-      yield* code().selection(lines(4), 1); // return i;
-      break;
-    } else {
-      yield* all(
-        code().selection(lines(3), 1), // if
-        arr_childs[i].fill("#FF3131", 1),
-      );
-    }
+  yield* all(
+    code().selection(lines(8), 1),
+    temp_text().text("", 1),
+    arr_layout().setArrTextKey(4, "96"),
+  );
 
-    yield* all(
-      code().selection(word(2, 37, 3), 1), // i++
-      key_layout().position(
-        getUpperPosition(key_layout(), arr_childs[i + 1], 40),
-        1,
-      ),
-    );
-  }
+  yield* code().selection(word(9, 6, 18), 1);
+  yield* code().selection(word(9, 43, 8), 1);
+
+  yield* view.opacity(0, 1);
+  yield* arr_layout().setArrTextKey(3, "99", 0);
+  yield* temp_text().text("96", 0);
+  yield* arr_layout().setArrTextKey(4, "98", 0);
+  yield* search(code, arr_layout, key, 0, 4, 0);
+  yield* all(slideTransition(Direction.Right), view.opacity(1, 1));
+  yield* view.opacity(1, 1);
+
+  yield* search(code, arr_layout, key, 4, 5);
+  yield* arr_layout().arr_last.fill(greyColor, 1);
+
+  yield* code().selection(lines(8), 1);
+  yield* all(temp_text().text("", 1), arr_layout().setArrTextKey(4, "96"));
+
+  yield* code().selection(word(9, 6, 18), 1);
+  yield* code().selection(word(9, 28, 13), 1);
+
+  yield* arr_layout().arr_last.fill(redColor, 1);
+  yield* code().selection(lines(10), 1);
+
+  yield* waitFor(1);
 
   finishScene();
   yield* view.opacity(0, 1);
-
-  yield* waitFor(1);
 });

@@ -1,190 +1,78 @@
-import { Layout, Rect, Txt, makeScene2D } from "@motion-canvas/2d";
+import { makeScene2D } from "@motion-canvas/2d";
+import { Reference } from "@motion-canvas/core";
 import {
   Direction,
   all,
   createRef,
-  createSignal,
   finishScene,
-  range,
   slideTransition,
-  useRandom,
   waitFor,
 } from "@motion-canvas/core";
-import {
-  InsideContainer,
-  OutsideContainer,
-} from "../../../components/container";
+import { MyArray } from "../../../components/my_array";
+import { greenColor, greyColor, redColor } from "../../../components/theme";
+import { Key } from "../../../components/key";
+import { MyText } from "../../../components/my_text";
+
+function* search(
+  array: Reference<MyArray>,
+  key: Reference<Key>,
+  begin: number,
+  end: number,
+  time: number = 1,
+) {
+  for (let i = begin; i < end; i++) {
+    yield* array().setPositionDowner(key, array().arr[i], time);
+    if (array().getArrTextKey(i) == "98") {
+      yield* array().arr[i].fill(greenColor, time);
+      yield* waitFor(time);
+      break;
+    } else {
+      yield* array().arr[i].fill(redColor, time);
+    }
+  }
+}
 
 export default makeScene2D(function* (view) {
-  const count = createSignal(5);
+  const arr_layout = createRef<MyArray>();
+  const key = createRef<Key>();
+  const temp = createRef<Key>();
+  const temp_text = createRef<MyText>();
 
-  const random = useRandom();
-
-  const pool = range(count()).map(() => (
-    <OutsideContainer>
-      <InsideContainer>
-        <Txt
-          fontFamily={"Jetbrains Mono"}
-          fontWeight={800}
-          fontSize={48}
-          fill={"#ffffff"}
-          text={random.nextInt(1, 100).toString()}
-        />
-      </InsideContainer>
-    </OutsideContainer>
-  ));
-
-  const arr_layout = createRef<Layout>();
-  const key_layout = createRef<Layout>();
-  const temp_layout = createRef<Layout>();
-  const temp_text = createRef<Txt>();
+  const count = 5;
 
   view.add(
-    <>
-      <Layout
-        direction={"column"}
-        alignItems={"center"}
-        gap={40}
-        ref={key_layout}
-        layout
-      >
-        <OutsideContainer fill={"#4CBB17"}>
-          <InsideContainer>
-            <Txt
-              fontFamily={"Jetbrains Mono"}
-              fontWeight={800}
-              fill={"white"}
-              fontSize={48}
-              text={"45"}
-            />
-          </InsideContainer>
-        </OutsideContainer>
-      </Layout>
-
-      <Layout
-        direction={"column"}
-        alignItems={"center"}
-        gap={40}
-        ref={temp_layout}
-        layout
-      >
-        <OutsideContainer>
-          <InsideContainer>
-            <Txt
-              fontFamily={"Jetbrains Mono"}
-              fontWeight={800}
-              fill={"white"}
-              fontSize={48}
-              text={""}
-              ref={temp_text}
-            />
-          </InsideContainer>
-        </OutsideContainer>
-      </Layout>
-
-      <Layout direction={"row"} height={120} gap={40} ref={arr_layout} layout>
-        {() => pool.slice(0, count())}
-      </Layout>
-    </>,
+    <MyArray count={count} answerIndex={count - 2} ref={arr_layout}>
+      <Key ref={key} text="98" fill={greenColor} />
+      <Key ref={temp} textRef={temp_text} />
+    </MyArray>,
   );
-
-  const arr_childs = arr_layout().childrenAs<Rect>();
-
-  const first_child = arr_childs[0];
-  key_layout().position([
-    first_child.position().x -
-      (first_child.width() / 2 + key_layout().width() / 2) -
-      40,
-    first_child.position().y +
-      (key_layout().height() / 2 - first_child.height() / 2),
-  ]);
-
-  temp_layout().position([
-    key_layout().position().x - key_layout().width() - 40,
-    key_layout().position().y,
-  ]);
+  yield* arr_layout().setPositionLeft(key, arr_layout().arr_first, 0);
+  yield* arr_layout().setPositionLeft(temp, key(), 0);
 
   view.opacity(0);
   yield* all(slideTransition(Direction.Right), view.opacity(1, 1));
 
-  yield* temp_layout().position(
-    arr_childs[arr_childs.length - 1]
-      .position()
-      .addY(
-        -(
-          key_layout().height() / 2 +
-          arr_childs[arr_childs.length - 1].height() / 2 +
-          40
-        ),
-      ),
-    1,
-  );
+  yield* arr_layout().setPositionUpper(temp, arr_layout().arr_last);
+  yield* temp_text().text("96", 1);
 
-  yield* temp_text().text("50", 1);
+  yield* arr_layout().setPositionDowner(key, arr_layout().arr_last);
 
-  yield* key_layout().position(
-    arr_childs[arr_childs.length - 1]
-      .position()
-      .addY(
-        key_layout().height() / 2 +
-          arr_childs[arr_childs.length - 1].height() / 2 +
-          40,
-      ),
-    1,
-  );
+  yield* arr_layout().setArrTextKey(4, "98");
+  yield* search(arr_layout, key, 0, 4);
 
-  yield* arr_childs[arr_childs.length - 1]
-    .childrenAs<Rect>()[0]
-    .childrenAs<Txt>()[0]
-    .text("45", 1);
+  yield* view.opacity(0, 1);
+  yield* arr_layout().setArrTextKey(3, "99", 0);
+  yield* search(arr_layout, key, 0, 4, 0);
+  yield* all(slideTransition(Direction.Right), view.opacity(1, 1));
+  yield* view.opacity(1, 1);
 
-  for (let i = 0; i < count(); i++) {
-    yield* key_layout().position(
-      arr_childs[i]
-        .position()
-        .addY(key_layout().height() / 2 + arr_childs[i].height() / 2 + 40),
-      1,
-    );
-    if (i > 2) {
-      yield* arr_childs[i].fill("#4CBB17", 1);
-      yield* waitFor(1);
-      break;
-    } else {
-      yield* arr_childs[i].fill("#FF3131", 1);
-    }
-  }
+  yield* search(arr_layout, key, 4, 5);
+  yield* arr_layout().arr_last.fill(greyColor, 1);
 
-  arr_childs[arr_childs.length - 2]
-    .childrenAs<Rect>()[0]
-    .childrenAs<Txt>()[0]
-    .text("46");
-  arr_childs[3].fill("#FF3131");
-
-  yield* slideTransition(Direction.Right);
-
-  yield* key_layout().position(
-    arr_childs[4]
-      .position()
-      .addY(key_layout().height() / 2 + arr_childs[4].height() / 2 + 40),
-    1,
-  );
-
-  yield* arr_childs[4].fill("#4CBB17", 1);
-  yield* waitFor(1);
-
-  yield* arr_childs[4].fill("rgb(20,20,20)", 1);
-
-  yield* all(
-    temp_text().text("", 1),
-    arr_childs[arr_childs.length - 1]
-      .childrenAs<Rect>()[0]
-      .childrenAs<Txt>()[0]
-      .text("50", 1),
-  );
+  yield* all(temp_text().text("", 1), arr_layout().setArrTextKey(4, "96"));
 
   yield* waitFor(1);
-
-  yield* arr_childs[4].fill("#FF3131", 1);
+  yield* arr_layout().arr_last.fill(redColor, 1);
 
   yield* waitFor(1);
 

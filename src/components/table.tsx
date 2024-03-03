@@ -14,7 +14,11 @@ export interface TableProps extends LayoutProps {
 }
 
 export class Table extends Layout {
-  private colors = new Map<string, string>([["1", greenColor]]);
+  private colors = new Map<string, string>([
+    ["1", greenColor],
+    ["logN", greenColor],
+  ]);
+  private fontSizes = new Map<string, number>([["logN", 32]]);
 
   public constructor(props?: TableProps) {
     super({
@@ -34,7 +38,13 @@ export class Table extends Layout {
               opacity={i == 0 || j == 0 ? 1 : 0}
             >
               <InsideContainer>
-                <MyText padding={paddingNormal} text={text} />
+                <MyText
+                  padding={paddingNormal}
+                  fontSize={
+                    this.fontSizes.has(text) ? this.fontSizes.get(text) : 48
+                  }
+                  text={text}
+                />
               </InsideContainer>
             </OutsideContainer>
           ))}

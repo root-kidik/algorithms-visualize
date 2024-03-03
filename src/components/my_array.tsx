@@ -7,7 +7,6 @@ import { InsideContainer } from "./container";
 
 export interface MyArrayProps extends LayoutProps {
   count: number;
-  answerIndex: number;
 }
 
 export class MyArray extends Layout {
@@ -24,9 +23,11 @@ export class MyArray extends Layout {
     this.count = props.count;
 
     const random = useRandom(1);
+    let i = 1;
 
     const pool = range(this.count).map(() => (
-      <Key text={random.nextInt(1, 100).toString()} />
+      // <Key text={random.nextInt(1, 100).toString()} />
+      <Key text={String(i++)} />
     ));
 
     this.add(

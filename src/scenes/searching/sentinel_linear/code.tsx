@@ -59,12 +59,7 @@ export default makeScene2D(function* (view) {
 
   view.add(
     <>
-      <MyArray
-        position={[0, -250]}
-        count={count}
-        answerIndex={count - 2}
-        ref={arr_layout}
-      >
+      <MyArray position={[0, -250]} count={count} ref={arr_layout}>
         <Key ref={key} text="98" fill={greenColor} />
         <Key ref={temp} textRef={temp_text} />
       </MyArray>

@@ -8,6 +8,7 @@ import { MyText } from "./my_text";
 
 export interface KeyProps extends OutsideContainerProps {
   text?: string;
+  textSize?: Number;
   textRef?: ReferenceReceiver<any>;
 }
 
@@ -19,7 +20,11 @@ export class Key extends OutsideContainer {
 
     this.add(
       <InsideContainer>
-        <MyText text={props.text} ref={props.textRef} />
+        <MyText
+          text={props.text}
+          ref={props.textRef}
+          fontSize={props.textSize ? props.textSize : 48}
+        />
       </InsideContainer>,
     );
   }

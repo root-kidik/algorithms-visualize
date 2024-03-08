@@ -2,32 +2,20 @@ import { makeScene2D } from "@motion-canvas/2d";
 import {
   Direction,
   all,
-  createRef,
   finishScene,
   slideTransition,
+  waitFor,
   waitUntil,
 } from "@motion-canvas/core";
-import { Table } from "../../../components/table";
+import { Key } from "../../../components/key";
 
 export default makeScene2D(function* (view) {
-  const cols = [
-    ["O", "Ω", "θ"],
-    ["⏳", "logN", "1", "logN"],
-    ["💾", "1", "1", "1"],
-  ];
-
-  const table = createRef<Table>();
-
-  view.add(
-    <>
-      <Table ref={table} cols={cols} />
-    </>,
-  );
+  view.add(<Key width={48 * 10} text="Binary search" />);
 
   view.opacity(0);
   yield* all(slideTransition(Direction.Right), view.opacity(1, 1));
 
-  yield* table().showNext();
+  yield* waitFor(1);
 
   yield* waitUntil("end");
 

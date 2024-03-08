@@ -1,5 +1,26 @@
 {
   "version": 0,
-  "timeEvents": [],
+  "timeEvents": [
+    {
+      "name": "last",
+      "targetTime": 5.429956218513527
+    },
+    {
+      "name": "if",
+      "targetTime": 7.179237384941776
+    },
+    {
+      "name": "i++",
+      "targetTime": 12.393702707516418
+    },
+    {
+      "name": "return",
+      "targetTime": 28.07379886103275
+    },
+    {
+      "name": "end",
+      "targetTime": 32.97980134847207
+    }
+  ],
   "seed": 4134699022
 }

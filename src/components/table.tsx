@@ -8,6 +8,7 @@ import {
   greyColor,
   paddingNormal,
 } from "./theme";
+import { waitUntil } from "@motion-canvas/core";
 
 export interface TableProps extends LayoutProps {
   cols: string[][];
@@ -58,6 +59,7 @@ export class Table extends Layout {
     for (let i = 1; i < childrens.length; i++) {
       const inner_childrens = childrens[i].children();
       for (let j = 1; j < inner_childrens.length; j++) {
+        yield* waitUntil("show" + i + j);
         yield* inner_childrens[j].opacity(1, 1);
       }
     }

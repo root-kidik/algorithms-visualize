@@ -4,13 +4,13 @@
     "background": "rgb(15,15,15)",
     "range": [
       0,
-      null
+      0
     ],
     "size": {
       "x": 1920,
       "y": 1080
     },
-    "audioOffset": 0
+    "audioOffset": 0.541703679265098
   },
   "preview": {
     "fps": 60,

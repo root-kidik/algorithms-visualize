@@ -1,5 +1,50 @@
 {
   "version": 0,
-  "timeEvents": [],
+  "timeEvents": [
+    {
+      "name": "empty",
+      "targetTime": 1.2991811108261706
+    },
+    {
+      "name": "back",
+      "targetTime": 3.374482177090716
+    },
+    {
+      "name": "замена",
+      "targetTime": 7.374482177090716
+    },
+    {
+      "name": "перебор",
+      "targetTime": 10.323968452137608
+    },
+    {
+      "name": "нашли3",
+      "targetTime": 25.323968452137606
+    },
+    {
+      "name": "возвращаем",
+      "targetTime": 28.323968452137606
+    },
+    {
+      "name": "if",
+      "targetTime": 31.677741011843697
+    },
+    {
+      "name": "return",
+      "targetTime": 34.443417171684835
+    },
+    {
+      "name": "нашли4",
+      "targetTime": 40.443417171684835
+    },
+    {
+      "name": "if2",
+      "targetTime": 46.443417171684835
+    },
+    {
+      "name": "end",
+      "targetTime": 56.67709946654482
+    }
+  ],
   "seed": 3400007614
 }

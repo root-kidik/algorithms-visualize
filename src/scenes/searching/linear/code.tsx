@@ -3,6 +3,7 @@ import {
   Direction,
   PossibleVector2,
   all,
+  chain,
   createRef,
   createSignal,
   finishScene,
@@ -10,6 +11,7 @@ import {
   slideTransition,
   useRandom,
   waitFor,
+  waitUntil,
 } from "@motion-canvas/core";
 import {
   CodeBlock,
@@ -93,7 +95,7 @@ export default makeScene2D(function* (view) {
               fontWeight={800}
               fill={"white"}
               fontSize={48}
-              text={"93"}
+              text={"11"}
             />
           </InsideContainer>
         </OutsideContainer>
@@ -151,18 +153,21 @@ export default makeScene2D(function* (view) {
   view.opacity(0);
   yield* all(slideTransition(Direction.Right), view.opacity(1, 1));
 
-  yield* all(
+  yield* chain(
     code().selection(word(2, 7, 12), 1), // size_t i = 0
     key_layout().position(getUpperPosition(key_layout(), arr_childs[0], 40), 1),
   );
+  yield* waitUntil("last");
   yield* code().selection(word(2, 20, 15), 1); // i < arr.size()
 
-  yield* all(
+  yield* waitUntil("if");
+  yield* chain(
     code().selection(lines(3, 3), 1), // if
     arr_childs[0].fill("#FF3131", 1),
   );
 
-  yield* all(
+  yield* waitUntil("i++");
+  yield* chain(
     code().selection(word(2, 37, 3), 1), // i++
     key_layout().position(getUpperPosition(key_layout(), arr_childs[1], 40), 1),
   );
@@ -171,21 +176,22 @@ export default makeScene2D(function* (view) {
     yield* code().selection(word(2, 20, 15), 1); // i < arr.size()
 
     if (i > 2) {
-      yield* all(
+      yield* chain(
         code().selection(lines(3), 1), // if
         arr_childs[i].fill("#4CBB17", 1),
       );
 
+      yield* waitUntil("return");
       yield* code().selection(lines(4), 1); // return i;
       break;
     } else {
-      yield* all(
+      yield* chain(
         code().selection(lines(3), 1), // if
         arr_childs[i].fill("#FF3131", 1),
       );
     }
 
-    yield* all(
+    yield* chain(
       code().selection(word(2, 37, 3), 1), // i++
       key_layout().position(
         getUpperPosition(key_layout(), arr_childs[i + 1], 40),
@@ -193,6 +199,8 @@ export default makeScene2D(function* (view) {
       ),
     );
   }
+
+  yield* waitUntil("end");
 
   finishScene();
   yield* view.opacity(0, 1);

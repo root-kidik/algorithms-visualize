@@ -1,5 +1,5 @@
 import { makeScene2D } from "@motion-canvas/2d";
-import { Reference } from "@motion-canvas/core";
+import { Reference, waitUntil } from "@motion-canvas/core";
 import {
   Direction,
   all,
@@ -41,6 +41,7 @@ function* search(
       return;
     }
 
+    yield* waitUntil("false" + m);
     yield* array().arr[m].fill(redColor, time);
     if (answer > Number(array().getArrTextKey(m))) {
       for (let i = l; i < m; i++) yield array().arr[i].opacity(0.25, 1);

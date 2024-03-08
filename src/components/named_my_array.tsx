@@ -1,33 +1,30 @@
-import { Reference, createRef, range, useRandom } from "@motion-canvas/core";
+import { Reference, createRef, range } from "@motion-canvas/core";
 import { gapNormal } from "./theme";
-import { Key } from "./key";
 import { Layout, LayoutProps } from "@motion-canvas/2d";
 import { MyText } from "./my_text";
 import { InsideContainer } from "./container";
+import { NamedKey } from "./named_key";
 
-export interface MyArrayProps extends LayoutProps {
+export interface NamedMyArrayProps extends LayoutProps {
   count: number;
 }
 
-export class MyArray extends Layout {
+export class NamedMyArray extends Layout {
   private count: number;
 
   private array = createRef<Layout>();
 
-  public arr: Key[];
-  public arr_first: Key;
-  public arr_last: Key;
+  public arr: NamedKey[];
+  public arr_first: NamedKey;
+  public arr_last: NamedKey;
 
-  public constructor(props?: MyArrayProps) {
+  public constructor(props?: NamedMyArrayProps) {
     super({ ...props });
     this.count = props.count;
 
-    const random = useRandom(1);
     let i = 1;
-
     const pool = range(this.count).map(() => (
-      //<Key text={random.nextInt(1, 100).toString()} />
-      <Key text={String(i++)} />
+      <NamedKey namedText={this.dec2bin(i)} text={String(i++)} />
     ));
 
     this.add(
@@ -36,7 +33,7 @@ export class MyArray extends Layout {
       </Layout>,
     );
 
-    this.arr = this.array().childrenAs<Key>();
+    this.arr = this.array().childrenAs<NamedKey>();
     this.arr_first = this.arr[0];
     this.arr_last = this.arr[this.arr.length - 1];
   }
@@ -52,24 +49,40 @@ export class MyArray extends Layout {
     return this.arr[i].childAs<InsideContainer>(0).childAs<MyText>(0).text();
   }
 
-  public *setPositionLeft(el1: Reference<Key>, el2: Key, time: number = 1) {
+  public *setPositionLeft(
+    el1: Reference<NamedKey>,
+    el2: NamedKey,
+    time: number = 1,
+  ) {
     yield* el1().position(
       [el2.position().x - el2.width() - gapNormal, el2.position().y],
       time,
     );
   }
 
-  public *setPositionUpper(el1: Reference<Key>, el2: Key, time: number = 1) {
+  public *setPositionUpper(
+    el1: Reference<NamedKey>,
+    el2: NamedKey,
+    time: number = 1,
+  ) {
     yield* el1().position(
       [el2.position().x, el2.position().y - el2.height() - gapNormal],
       time,
     );
   }
 
-  public *setPositionDowner(el1: Reference<Key>, el2: Key, time: number = 1) {
+  public *setPositionDowner(
+    el1: Reference<NamedKey>,
+    el2: NamedKey,
+    time: number = 1,
+  ) {
     yield* el1().position(
       [el2.position().x, el2.position().y + el2.height() + gapNormal],
       time,
     );
+  }
+
+  private dec2bin(dec: number) {
+    return (dec >>> 0).toString(2);
   }
 }

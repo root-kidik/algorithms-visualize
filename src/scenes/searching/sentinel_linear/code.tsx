@@ -2,10 +2,12 @@ import { makeScene2D } from "@motion-canvas/2d";
 import {
   Direction,
   all,
+  chain,
   createRef,
   finishScene,
   slideTransition,
   waitFor,
+  waitUntil,
 } from "@motion-canvas/core";
 import {
   CodeBlock,
@@ -27,21 +29,22 @@ function* search(
   time: number = 1,
 ) {
   for (let i = begin; i < end; i++) {
-    yield* all(
+    yield* chain(
+      code().selection(word(7, 24, 3), time),
       array().setPositionDowner(key, array().arr[i], time),
-      code().selection(word(6, 24, 3), time),
     );
     if (array().getArrTextKey(i) == "98") {
-      yield* all(
+      yield* waitUntil("нашли" + i);
+      yield* chain(
+        code().selection(word(7, 9, 13), time),
         array().arr[i].fill(greenColor, time),
-        code().selection(word(6, 9, 13), time),
       );
       yield* waitFor(time);
       break;
     } else {
-      yield* all(
+      yield* chain(
+        code().selection(word(7, 9, 13), time),
         array().arr[i].fill(redColor, time),
-        code().selection(word(6, 9, 13), time),
       );
     }
   }
@@ -71,6 +74,7 @@ export default makeScene2D(function* (view) {
         position={[0, 250]}
         code={`int sentinel_linear_search(vector<int> arr, int key)
 {
+  if (arr.empty()) return -1;
   int temp = arr.back();
   arr.back() = key;
 
@@ -92,37 +96,47 @@ export default makeScene2D(function* (view) {
   view.opacity(0);
   yield* all(slideTransition(Direction.Right), view.opacity(1, 1));
 
+  yield* waitUntil("empty");
+  yield* code().selection(lines(2), 1);
+
+  yield* waitUntil("back");
   yield* arr_layout().setPositionUpper(temp, arr_layout().arr_last);
-  yield* all(temp_text().text("96", 1), code().selection(lines(2), 1));
+  yield* chain(code().selection(lines(3), 1), temp_text().text("96", 1));
 
   yield* arr_layout().setPositionDowner(key, arr_layout().arr_last);
 
-  yield* all(
+  yield* waitUntil("замена");
+  yield* chain(
+    code().selection(lines(4), 1),
     arr_layout().setArrTextKey(4, "98"),
-    code().selection(lines(3), 1),
   );
 
-  yield* all(
+  yield* waitUntil("перебор");
+  yield* chain(
+    code().selection(lines(6), 1),
     arr_layout().setPositionDowner(key, arr_layout().arr[0], 1),
-    code().selection(lines(5), 1),
   );
 
-  yield* all(
+  yield* chain(
+    code().selection(word(7, 9, 13), 1),
     arr_layout().arr[0].fill(redColor, 1),
-    code().selection(word(6, 9, 13), 1),
   );
   yield* waitFor(1);
 
   yield* search(code, arr_layout, key, 1, 4);
 
-  yield* all(
-    code().selection(lines(8), 1),
+  yield* waitUntil("возвращаем");
+  yield* chain(
+    code().selection(lines(9), 1),
     temp_text().text("", 1),
     arr_layout().setArrTextKey(4, "96"),
   );
 
-  yield* code().selection(word(9, 6, 18), 1);
-  yield* code().selection(word(9, 43, 8), 1);
+  yield* waitUntil("if");
+  yield* code().selection(word(10, 6, 18), 1);
+
+  yield* waitUntil("return");
+  yield* code().selection(word(10, 43, 8), 1);
 
   yield* view.opacity(0, 1);
   yield* arr_layout().setArrTextKey(3, "99", 0);
@@ -135,17 +149,19 @@ export default makeScene2D(function* (view) {
   yield* search(code, arr_layout, key, 4, 5);
   yield* arr_layout().arr_last.fill(greyColor, 1);
 
-  yield* code().selection(lines(8), 1);
+  yield* code().selection(lines(9), 1);
   yield* all(temp_text().text("", 1), arr_layout().setArrTextKey(4, "96"));
 
-  yield* code().selection(word(9, 6, 18), 1);
-  yield* code().selection(word(9, 28, 13), 1);
+  yield* waitUntil("if2");
+  yield* code().selection(word(10, 6, 18), 1);
+  yield* code().selection(word(10, 28, 13), 1);
 
   yield* arr_layout().arr_last.fill(redColor, 1);
-  yield* code().selection(lines(10), 1);
+  yield* code().selection(lines(11), 1);
 
   yield* waitFor(1);
 
+  yield* waitUntil("end");
   finishScene();
   yield* view.opacity(0, 1);
 });

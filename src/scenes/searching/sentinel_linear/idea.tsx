@@ -1,5 +1,5 @@
 import { makeScene2D } from "@motion-canvas/2d";
-import { Reference } from "@motion-canvas/core";
+import { Reference, chain, waitUntil } from "@motion-canvas/core";
 import {
   Direction,
   all,
@@ -52,8 +52,11 @@ export default makeScene2D(function* (view) {
   view.opacity(0);
   yield* all(slideTransition(Direction.Right), view.opacity(1, 1));
 
-  yield* arr_layout().setPositionUpper(temp, arr_layout().arr_last);
-  yield* temp_text().text("96", 1);
+  yield* waitUntil("temp");
+  yield* chain(
+    arr_layout().setPositionUpper(temp, arr_layout().arr_last),
+    temp_text().text("96", 1),
+  );
 
   yield* arr_layout().setPositionDowner(key, arr_layout().arr_last);
 

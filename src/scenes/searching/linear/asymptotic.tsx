@@ -5,6 +5,7 @@ import {
   createRef,
   finishScene,
   slideTransition,
+  waitUntil,
 } from "@motion-canvas/core";
 import { Table } from "../../../components/table";
 
@@ -27,6 +28,8 @@ export default makeScene2D(function* (view) {
   yield* all(slideTransition(Direction.Right), view.opacity(1, 1));
 
   yield* table().showNext();
+
+  yield* waitUntil("end");
 
   finishScene();
   yield* view.opacity(0, 1);
